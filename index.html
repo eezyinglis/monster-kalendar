@@ -193,13 +193,13 @@ button:focus-visible{outline:3px solid var(--acid);outline-offset:3px}
   <h2>Pravidla</h2>
   <ul class="rules" id="rules"></ul>
   <div class="foot">
-    <p>Úkol splň do půlnoci dne, kdy plechovku otevřeš, a pošli proof do WhatsApp skupiny Ambrožíci. Když pár dní vynecháš, otevři je naráz a splň všechny ten den. Nesplníš? Plechovka se vrací.</p>
+    <p>Úkol splň do půlnoci dne, kdy plechovku vytáhneš z automatu, a pošli proof do WhatsApp skupiny Ambrožíci. Vypít ji můžeš, kdy chceš. Když pár dní vynecháš, vytáhni je naráz a splň všechny ten den. Nesplníš? Plechovka se vrací.</p>
     <form class="admin" id="adminform" autocomplete="off">
       <label for="pw">Správce</label>
       <div class="arow"><input id="pw" type="password" placeholder="Heslo" enterkeyhint="go"><button type="submit">Odemknout</button></div>
       <p class="aerr" id="aerr" hidden>Špatné heslo.</p>
     </form>
-    <div class="admin" id="testbox" hidden><p><b>Testovací režim:</b> ťukni na libovolný sloupec a otevřeš jeho spodní plechovku hned, bez ohledu na datum a pořadí.</p><div class="arow"><button id="reset" type="button">Vynulovat kalendář</button><button id="lock" type="button">Zamknout</button></div></div>
+    <div class="admin" id="testbox" hidden><p><b>Testovací režim:</b> ťukni na libovolný sloupec a vytáhneš jeho spodní plechovku hned, bez ohledu na datum a pořadí.</p><div class="arow"><button id="reset" type="button">Vynulovat kalendář</button><button id="lock" type="button">Zamknout</button></div></div>
   </div>
 </div>
 
@@ -271,7 +271,7 @@ const CANS = [null,
   ['Mixxd Punch','#7c2466','#ea4c95',1,'r','Dostaň ban nebo kick v libovolné hře. Screenshot jako proof.'],
   ['Ultra Rosá','#f175a3','#fde1eb',0,'u','Pošli do skupiny poslední fotku ve své galerii. Bez mazání!'],
   ['Viking Berry','#3a63c8','#ea579d',1,'u','Fortnite Zero Build 1v1, first to 5. Vítěz bere obě plechovky.',1],
-  ['Ultra Sunrise','#f2862c','#ffd17a',0,'e','6 hodin v kuse bez sociálních sítí a YouTube, počítáno od otevření plechovky. Screenshot času u obrazovky na začátku a na konci.'],
+  ['Ultra Sunrise','#f2862c','#ffd17a',0,'e','6 hodin v kuse bez sociálních sítí a YouTube, počítáno od vytažení plechovky z automatu. Screenshot času u obrazovky na začátku a na konci.'],
   ['Aussie Lemonade','#f5d548','#2c9ed6',1,'u','Pošlete do skupiny video, kde mluvíte anglicky s australským přízvukem.'],
   ['Fantasy Ruby Red','#d6233b','#ffb6c1',0,'u','2 minuty planku v kuse na video.'],
   ['Top Speed Zero','#2c2f8e','#ff5fb3',0,'u','Kdo první plácne taťku po břiše a natočí to, vyhrává obě plechovky.',1],
@@ -281,7 +281,7 @@ const CANS = [null,
   ['Ultra Paradise','#7dd45a','#e4ffbf',0,'r','Nauč se TikTok tanec a pošli video do skupiny.'],
   ['Rehab Wild Berry Tea','#161616','#e8378f',1,'e','Upeč nebo uvař něco pro rodinu. Fotka a někdo z rodiny to potvrdí ve skupině.'],
   ['Ultra Black','#222222','#c0303a',0,'r','Vyrob si kostým nebo převlek a pošli v něm fotku do skupiny.'],
-  ['Ultra Blue Hawaiian','#3cc5f0','#ffd166',0,'e','Od otevření plechovky až do půlnoci jez POUZE sladká jídla. Fotka každého jídla.'],
+  ['Ultra Blue Hawaiian','#3cc5f0','#ffd166',0,'e','Od vytažení plechovky z automatu až do půlnoci jez POUZE sladká jídla. Fotka každého jídla.'],
   ['Juice Voodoo','#c5d832','#6b2b92',1,'l','Voodoo vypij u štědrovečerní večeře. Fotka nebo video od stolu jako proof.',0,'xmas'],
   ['Štědrovečerní bonus','#c8202f','#f2c94c',2,'l','Vyfoť se s Honzovým dárkem u stromečku a pošli fotku do skupiny, ať si ho můžeš nechat.',0,'xmas']
 ];
@@ -618,8 +618,8 @@ function deadline(n){
   if (sp === 'xmas') return 'Splň <b>24. 12. na Štědrý den</b> a pošli proof. Jinak plechovku vracíš.';
   const at = st.at[n] ? st.at[n].split('-').map(Number) : null;
   const when = at ? ' (' + DNY[new Date(at[0], at[1] - 1, at[2]).getDay()] + ' ' + at[2] + '. ' + at[1] + '.)' : '';
-  if (sp === 'school') return 'Splň ve škole do půlnoci dne otevření' + when + '. Když otevíráš o víkendu nebo o prázdninách, splň ho nejbližší školní den.';
-  return 'Splň do <b>půlnoci dne otevření</b>' + when + ' a pošli proof. Jinak plechovku vracíš.';
+  if (sp === 'school') return 'Splň ve škole do půlnoci dne vytažení z automatu' + when + '. Když plechovku vytáhneš o víkendu nebo o prázdninách, splň ho nejbližší školní den.';
+  return 'Splň do <b>půlnoci dne vytažení z automatu</b>' + when + ' a pošli proof. Jinak plechovku vracíš.';
 }
 const TIERS = ['c', 'u', 'r', 'e', 'l'];
 function setTier(k){ const sh = $('sheet'), col = RAR[TIERS[k]][1]; sh.style.setProperty('--bc', col); sh.style.setProperty('--bo', (.25 + k * .17).toFixed(2)); $('climb').textContent = RAR[TIERS[k]][0]; }
