@@ -199,7 +199,7 @@ button:focus-visible{outline:3px solid var(--acid);outline-offset:3px}
       <div class="arow"><input id="pw" type="password" placeholder="Heslo" enterkeyhint="go"><button type="submit">Odemknout</button></div>
       <p class="aerr" id="aerr" hidden>Špatné heslo.</p>
     </form>
-    <div class="admin" id="testbox" hidden><p><b>Testovací režim:</b> všechny plechovky jdou otevřít hned.</p><div class="arow"><button id="reset" type="button">Vynulovat kalendář</button><button id="lock" type="button">Zamknout</button></div></div>
+    <div class="admin" id="testbox" hidden><p><b>Testovací režim:</b> ťukni na libovolný sloupec a otevřeš jeho spodní plechovku hned, bez ohledu na datum a pořadí.</p><div class="arow"><button id="reset" type="button">Vynulovat kalendář</button><button id="lock" type="button">Zamknout</button></div></div>
   </div>
 </div>
 
@@ -539,12 +539,13 @@ $('rules').innerHTML = Object.values(RAR).map(r => '<li style="--r:' + r[1] + '"
 function layout(){
   const nx = nextN(), today = dayNow();
   for (let c = 0; c < 4; c++) {
-    const r = remaining(c), col = rack.children[c], on = !!nx && (nx - 1) % 4 === c && nx <= today;
+    const r = remaining(c), col = rack.children[c];
+    const on = st.admin ? r.length > 0 : !!nx && (nx - 1) % 4 === c && nx <= today;
     r.forEach((n, i) => { slots[n].style.setProperty('--i', i); slots[n].classList.toggle('hot', on && i === 0); });
     col.classList.toggle('now', on);
-    col.setAttribute('aria-label', on ? 'Vytáhnout plechovku dne ' + nx : 'Sloupec ' + (c + 1) + ', zbývá ' + r.length);
+    col.setAttribute('aria-label', on ? 'Vytáhnout plechovku dne ' + r[0] : 'Sloupec ' + (c + 1) + ', zbývá ' + r.length);
     const led = leds.children[c];
-    led.textContent = on ? 'Dnes · ' + nx : (r.length ? r.length + ' ks' : 'Prázdno');
+    led.textContent = on ? (st.admin ? 'Den ' + r[0] : 'Dnes · ' + nx) : (r.length ? r.length + ' ks' : 'Prázdno');
     led.classList.toggle('on', on);
   }
   status(); chips(); lcd();
@@ -562,7 +563,8 @@ function status(){
   else if (!today) { const k = Math.max(1, Math.ceil((new Date(YEAR, 11, 1) - new Date()) / 864e5)); t = 'Start <b>1. prosince</b>, za ' + k + ' ' + plural(k) + '.'; }
   else if (nx <= today) { const late = today - nx; t = 'Na řadě je <b>den ' + nx + '</b> ve sloupci ' + ((nx - 1) % 4 + 1) + '.' + (late > 0 && !isTest() ? ' Doháníš ' + (late + 1) + ' ' + plural(late + 1) + '.' : ''); }
   else t = 'Den ' + nx + ' se otevře <b>' + nx + '. prosince</b>.';
-  $('status').innerHTML = t + (isTest() ? ' · testovací režim' : '');
+  if (st.admin) t = 'Testovací režim: ťukni na libovolný sloupec.';
+  $('status').innerHTML = t;
   $('testbox').hidden = !st.admin;
   $('adminform').hidden = !!st.admin;
 }
@@ -581,8 +583,10 @@ let busy = false;
 rack.addEventListener('pointerover', e => { const c = e.target.closest('.colb.now'); if (c && !busy && ac) S.hover(); });
 rack.addEventListener('click', e => {
   const col = e.target.closest('.colb'); if (!col || busy) return;
-  const c = +col.dataset.c, nx = nextN(), today = dayNow();
-  if (!nx || (nx - 1) % 4 !== c || nx > today) {
+  const c = +col.dataset.c, today = dayNow();
+  let nx = nextN();
+  if (st.admin) { nx = remaining(c)[0] || 0; if (!nx) { S.nope(); toast('Tenhle sloupec je prázdný.'); return; } }
+  else if (!nx || (nx - 1) % 4 !== c || nx > today) {
     S.nope(); buzz(40); col.classList.remove('shake'); void col.offsetWidth; col.classList.add('shake');
     if (!nx) toast('Všechno vypito. Veselé Vánoce!');
     else if (!today) toast('Kalendář startuje 1. prosince.');
